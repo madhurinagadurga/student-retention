@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Risk Prediction Dashboard | Nexus Strategies</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <div class="logo-icon">NS</div>
+                <div>
+                    <h1 class="nav-title">Student Risk Prediction System</h1>
+                    <p class="nav-subtitle">Nexus Strategies Analytics</p>
+                </div>
+            </div>
+            <div class="nav-tabs">
+                <button class="nav-tab active" data-tab="overview">Overview</button>
+                <button class="nav-tab" data-tab="risk-analysis">Risk Analysis</button>
+                <button class="nav-tab" data-tab="students">Student Profiles</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Filter Panel -->
+        <div class="filter-panel">
+            <h3 class="filter-title">Filter Dashboard</h3>
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label for="departmentFilter">Department</label>
+                    <select id="departmentFilter" class="filter-select">
+                        <option value="all">All Departments</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="genderFilter">Gender</label>
+                    <select id="genderFilter" class="filter-select">
+                        <option value="all">All Genders</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="riskFilter">Risk Category</label>
+                    <select id="riskFilter" class="filter-select">
+                        <option value="all">All Risk Levels</option>
+                        <option value="High">High Risk</option>
+                        <option value="Medium">Medium Risk</option>
+                        <option value="Low">Low Risk</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="semesterFilter">Semester</label>
+                    <select id="semesterFilter" class="filter-select">
+                        <option value="all">All Semesters</option>
+                    </select>
+                </div>
+            </div>
+            <button id="resetFilters" class="reset-btn">Reset All Filters</button>
+        </div>
+
+        <!-- Tab Content -->
+        <div id="overview" class="tab-content active">
+            <!-- KPI Cards -->
+            <div class="kpi-section">
+                <div class="kpi-card kpi-blue">
+                    <div class="kpi-icon">📊</div>
+                    <div class="kpi-content">
+                        <p class="kpi-label">Average GPA</p>
+                        <h2 class="kpi-value" id="avgGPA">0.00</h2>
+                        <span class="kpi-subtitle">Out of 4.0</span>
+                    </div>
+                </div>
+                <div class="kpi-card kpi-gold">
+                    <div class="kpi-icon">📈</div>
+                    <div class="kpi-content">
+                        <p class="kpi-label">Avg Attendance</p>
+                        <h2 class="kpi-value" id="avgAttendance">0%</h2>
+                        <span class="kpi-subtitle">Based on selected filters</span>
+                    </div>
+                </div>
+                <div class="kpi-card kpi-red">
+                    <div class="kpi-icon">⚠️</div>
+                    <div class="kpi-content">
+                        <p class="kpi-label">High Risk Students</p>
+                        <h2 class="kpi-value" id="highRiskPercent">0%</h2>
+                        <span class="kpi-subtitle" id="highRiskCount">0 students</span>
+                    </div>
+                </div>
+                <div class="kpi-card kpi-green">
+                    <div class="kpi-icon">👥</div>
+                    <div class="kpi-content">
+                        <p class="kpi-label">Total Students</p>
+                        <h2 class="kpi-value" id="totalStudents">0</h2>
+                        <span class="kpi-subtitle">In dataset</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="charts-grid">
+                <div class="chart-card chart-medium">
+                    <h3 class="chart-title">Risk Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="riskDonutChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card chart-medium">
+                    <h3 class="chart-title">Department-wise Average GPA</h3>
+                    <div class="chart-container">
+                        <canvas id="deptGPAChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card chart-large">
+                    <h3 class="chart-title">GPA vs Risk Level Scatter Plot</h3>
+                    <div class="chart-container">
+                        <canvas id="gpaRiskScatter"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card chart-large">
+                    <h3 class="chart-title">Attendance vs GPA Bubble Chart</h3>
+                    <div class="chart-container">
+                        <canvas id="attendanceGPABubble"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card chart-medium">
+                    <h3 class="chart-title">Gender-based Risk Comparison</h3>
+                    <div class="chart-container">
+                        <canvas id="genderRiskChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card chart-medium">
+                    <h3 class="chart-title">Semester-wise GPA Trend</h3>
+                    <div class="chart-container">
+                        <canvas id="semesterTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="risk-analysis" class="tab-content">
+            <div class="charts-grid">
+                <div class="chart-card chart-full">
+                    <h3 class="chart-title">Risk Heatmap by Department & Semester</h3>
+                    <div class="heatmap-container" id="riskHeatmap"></div>
+                </div>
+
+                <div class="chart-card chart-large">
+                    <h3 class="chart-title">Department Risk Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="deptRiskChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card chart-large">
+                    <h3 class="chart-title">Risk Score Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="riskScoreDistribution"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="students" class="tab-content">
+            <div class="table-card">
+                <div class="table-header">
+                    <h3 class="chart-title">Student Risk Leaderboard</h3>
+                    <input type="text" id="searchStudent" class="search-input" placeholder="Search by name or ID...">
+                </div>
+                <div class="table-container">
+                    <table id="studentTable">
+                        <thead>
+                            <tr>
+                                <th data-sort="StudentID">Student ID ↕</th>
+                                <th data-sort="Name">Name ↕</th>
+                                <th data-sort="Department">Department ↕</th>
+                                <th data-sort="GPA">GPA ↕</th>
+                                <th data-sort="Attendance">Attendance ↕</th>
+                                <th data-sort="RiskCategory">Risk Level ↕</th>
+                                <th data-sort="RiskScore">Risk Score ↕</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentTableBody">
+                            <!-- Dynamic content -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="pagination"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Profile Modal -->
+    <div id="studentModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <div class="modal-header">
+                <h2 id="modalStudentName">Student Name</h2>
+                <span id="modalRiskBadge" class="risk-badge">Medium</span>
+            </div>
+            <div class="modal-body">
+                <div class="modal-grid">
+                    <div class="modal-field">
+                        <label>Student ID</label>
+                        <p id="modalStudentID">-</p>
+                    </div>
+                    <div class="modal-field">
+                        <label>Department</label>
+                        <p id="modalDepartment">-</p>
+                    </div>
+                    <div class="modal-field">
+                        <label>Gender</label>
+                        <p id="modalGender">-</p>
+                    </div>
+                    <div class="modal-field">
+                        <label>Semester</label>
+                        <p id="modalSemester">-</p>
+                    </div>
+                    <div class="modal-field">
+                        <label>GPA</label>
+                        <p id="modalGPA" class="highlight-value">-</p>
+                    </div>
+                    <div class="modal-field">
+                        <label>Attendance</label>
+                        <p id="modalAttendance" class="highlight-value">-</p>
+                    </div>
+                    <div class="modal-field">
+                        <label>Fee Balance</label>
+                        <p id="modalFeeBalance">-</p>
+                    </div>
+                    <div class="modal-field">
+                        <label>Risk Score</label>
+                        <p id="modalRiskScore" class="highlight-value">-</p>
+                    </div>
+                </div>
+                <div class="modal-chart">
+                    <h4>Performance Metrics</h4>
+                    <canvas id="modalChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2025 Nexus Strategies | Student Risk Prediction System</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
