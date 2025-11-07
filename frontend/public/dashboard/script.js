@@ -1,3 +1,87 @@
+// Authentication functions
+function switchToRegister() {
+    document.getElementById('loginForm').classList.remove('active');
+    document.getElementById('registerForm').classList.add('active');
+}
+
+function switchToLogin() {
+    document.getElementById('registerForm').classList.remove('active');
+    document.getElementById('loginForm').classList.add('active');
+}
+
+function handleLogin(event) {
+    event.preventDefault();
+    
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const user = users.find(u => u.email === email && u.password === password);
+    
+    if (user) {
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        showDashboard(user);
+    } else {
+        alert('Invalid email or password. Please try again.');
+    }
+}
+
+function handleRegister(event) {
+    event.preventDefault();
+    
+    const name = document.getElementById('registerName').value;
+    const email = document.getElementById('registerEmail').value;
+    const password = document.getElementById('registerPassword').value;
+    const confirmPassword = document.getElementById('registerConfirmPassword').value;
+    
+    if (password !== confirmPassword) {
+        alert('Passwords do not match!');
+        return;
+    }
+    
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    
+    if (users.find(u => u.email === email)) {
+        alert('Email already registered. Please login instead.');
+        return;
+    }
+    
+    const newUser = {
+        name: name,
+        email: email,
+        password: password,
+        createdAt: new Date().toISOString()
+    };
+    
+    users.push(newUser);
+    localStorage.setItem('users', JSON.stringify(users));
+    localStorage.setItem('currentUser', JSON.stringify(newUser));
+    showDashboard(newUser);
+}
+
+function showDashboard(user) {
+    document.getElementById('authModal').classList.remove('active');
+    document.getElementById('mainDashboard').style.display = 'block';
+    document.getElementById('userName').textContent = user.name;
+    
+    loadData();
+    initializeEventListeners();
+}
+
+function handleLogout() {
+    if (confirm('Are you sure you want to logout?')) {
+        localStorage.removeItem('currentUser');
+        window.location.reload();
+    }
+}
+
+// Make functions globally available
+window.switchToRegister = switchToRegister;
+window.switchToLogin = switchToLogin;
+window.handleLogin = handleLogin;
+window.handleRegister = handleRegister;
+window.handleLogout = handleLogout;
+
 // Global variables
 let allStudents = [];
 let filteredStudents = [];
@@ -7,10 +91,14 @@ const studentsPerPage = 20;
 let sortColumn = 'RiskScore';
 let sortDirection = 'desc';
 
-// Initialize app
+// Check if user is already logged in
 document.addEventListener('DOMContentLoaded', () => {
-    loadData();
-    initializeEventListeners();
+    const currentUser = localStorage.getItem('currentUser');
+    
+    if (currentUser) {
+        const user = JSON.parse(currentUser);
+        showDashboard(user);
+    }
 });
 
 // Load CSV data
