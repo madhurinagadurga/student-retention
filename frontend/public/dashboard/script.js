@@ -15,14 +15,18 @@ function handleLogin(event) {
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
     
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const user = users.find(u => u.email === email && u.password === password);
-    
-    if (user) {
+    // Allow any email and password to login (no validation)
+    if (email && password) {
+        const user = {
+            name: email.split('@')[0], // Use email prefix as name
+            email: email,
+            createdAt: new Date().toISOString()
+        };
+        
         localStorage.setItem('currentUser', JSON.stringify(user));
         showDashboard(user);
     } else {
-        alert('Invalid email or password. Please try again.');
+        alert('Please enter both email and password.');
     }
 }
 
