@@ -73,10 +73,8 @@ function showDashboard(user) {
 }
 
 function handleLogout() {
-    if (confirm('Are you sure you want to logout?')) {
-        localStorage.removeItem('currentUser');
-        window.location.reload();
-    }
+    localStorage.removeItem('currentUser');
+    window.location.reload();
 }
 
 // Make functions globally available
