@@ -74,7 +74,10 @@ function showDashboard(user) {
 
 function handleLogout() {
     localStorage.removeItem('currentUser');
-    window.location.reload();
+    document.getElementById('mainDashboard').style.display = 'none';
+    document.getElementById('authModal').classList.add('active');
+    document.getElementById('loginEmail').value = '';
+    document.getElementById('loginPassword').value = '';
 }
 
 // Make functions globally available
